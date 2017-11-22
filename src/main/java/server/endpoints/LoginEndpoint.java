@@ -62,7 +62,7 @@ public class LoginEndpoint {
 
             if (doHash.equals(foundStudent.getPassword())) {
                 //sets the token for the student
-                tokenController.setToken(foundStudent);
+                String _token = tokenController.setToken(foundStudent);
 
                 String json = new Gson().toJson(foundStudent);
                 String crypted = Crypter.encryptDecrypt(json);
@@ -71,7 +71,7 @@ public class LoginEndpoint {
                 return Response
                         .status(200)
                         .type("application/json")
-                        .entity(new Gson().toJson(crypted))
+                        .entity(new Gson().toJson(_token))
                         .build();
             } else {
                 Log.writeLog(getClass().getName(), this, "Password incorect", 2);
