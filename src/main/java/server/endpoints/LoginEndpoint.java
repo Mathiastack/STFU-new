@@ -21,6 +21,7 @@ public class LoginEndpoint {
     private StudentTable studentTable = new StudentTable();
     private TokenController tokenController = new TokenController();
     private Gson gson = new Gson();
+    private Crypter crypter = new Crypter ();
 
     /**
      *
@@ -31,6 +32,9 @@ public class LoginEndpoint {
      */
     @POST
     public Response login(@HeaderParam("Authorization") String token, String jsonLogin) throws Exception {
+
+        jsonLogin = gson.fromJson(jsonLogin, String.class);
+        jsonLogin = crypter.decrypt(jsonLogin);
 
         CurrentStudentContext student = tokenController.getStudentFromTokens(token);
         Student currentStudent = student.getCurrentStudent();
@@ -63,15 +67,13 @@ public class LoginEndpoint {
             if (doHash.equals(foundStudent.getPassword())) {
                 //sets the token for the student
                 String _token = tokenController.setToken(foundStudent);
-
-                String json = new Gson().toJson(foundStudent);
-                String crypted = Crypter.encryptDecrypt(json);
+                String tokenJson = gson.toJson(_token);
 
                 Log.writeLog(getClass().getName(), this, "Logged in", 0);
                 return Response
                         .status(200)
                         .type("application/json")
-                        .entity(new Gson().toJson(_token))
+                        .entity(Crypter.encrypt(tokenJson))
                         .build();
             } else {
                 Log.writeLog(getClass().getName(), this, "Password incorect", 2);

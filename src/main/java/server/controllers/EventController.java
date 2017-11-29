@@ -100,5 +100,14 @@ public class EventController {
         return updateEvent;
 
     }
+        /**
+          *
+          * @return my Events
+         */
+              public ArrayList<Event> getMyEvents(Student student) {
+                ArrayList getMyEvents = eventTable.getMyEvents(student);
+                eventTable.close();
+               return getMyEvents;
+           }
 }
 
